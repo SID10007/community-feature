@@ -65,31 +65,32 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, className }) => {
     try {
       const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
       
-      // Convert audio to base64 or process it as needed
-      const reader = new FileReader();
-      reader.readAsDataURL(audioBlob);
+      // For demo purposes, simulate processing
+      toast.info("Processing your voice input...");
       
-      reader.onloadend = async () => {
-        const base64Audio = reader.result as string;
+      try {
+        // Simulate a slight delay for "transcription"
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // For demo purposes, simulate processing audio with Gemini
-        toast.info("Processing your voice input...");
+        // In a real app, you would first convert audio to text, then process with Gemini
+        // For this demo, we'll use a mock transcription and send it to Gemini
+        const mockTranscription = "I need information about pension schemes";
         
-        try {
-          // Here we'd send the audio to a speech-to-text service and then to Gemini
-          // For now, we'll simulate this with a delay
-          setTimeout(async () => {
-            const result = await processVoiceInput(base64Audio);
-            setQuery(result);
-            onSearch(result);
-            setIsProcessing(false);
-          }, 1500);
-        } catch (error) {
-          console.error('Error processing audio:', error);
-          toast.error("Failed to process voice input.");
-          setIsProcessing(false);
-        }
-      };
+        // Process with Gemini
+        const result = await processVoiceInput(mockTranscription);
+        setQuery(result);
+        onSearch(result);
+        setIsProcessing(false);
+        toast.success("Voice input processed!");
+      } catch (error) {
+        console.error('Error processing audio:', error);
+        // Use a different fallback than before
+        const fallbackQuery = "pension schemes for rural citizens";
+        setQuery(fallbackQuery);
+        onSearch(fallbackQuery);
+        setIsProcessing(false);
+        toast.info("Used fallback query due to processing error");
+      }
     } catch (error) {
       console.error('Error handling audio data:', error);
       toast.error("Failed to process recording.");

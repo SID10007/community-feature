@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from "sonner";
-import { processVoiceInput } from '@/services/geminiService';
+import { extractQuestionDetails } from '@/services/geminiService';
 
 interface VoiceInputProps {
   onTranscriptionComplete: (data: {
@@ -60,29 +60,34 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscriptionComplete, classN
     try {
       const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
       
-      // Convert audio to base64 or process it as needed
-      const reader = new FileReader();
-      reader.readAsDataURL(audioBlob); 
+      // For demo purposes, we'll simulate speech-to-text
+      // In a real app, you would send the audio to a speech-to-text service
       
-      reader.onloadend = async () => {
-        const base64Audio = reader.result as string;
-        
-        // For demo purposes, simulate processing with Gemini
-        // In a real app, you'd send the audio to a speech-to-text service and then to Gemini
-        setTimeout(() => {
-          // Mock result for demonstration
-          const result = {
-            question: "How to apply for a small business loan?",
-            description: "I have a small dairy farm and want to expand my business. I need information about government schemes or banks that provide loans to rural entrepreneurs with minimal paperwork.",
-            name: "Ramesh Kumar",
-            tags: ["business loan", "agriculture", "government scheme"]
-          };
-          
-          onTranscriptionComplete(result);
-          setIsProcessing(false);
-          toast.success("Voice input processed successfully!");
-        }, 2000);
-      };
+      // Simulate a 2-second delay for "transcription"
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Generate a mock transcription (in real app, this would come from a speech-to-text service)
+      const mockTranscription = "I want to know about agricultural loans for small farmers in Maharashtra. My name is Suresh Patil. I need details about interest rates and repayment periods.";
+      
+      // Now process this text with Gemini to extract structured information
+      try {
+        const result = await extractQuestionDetails(mockTranscription);
+        onTranscriptionComplete(result);
+        setIsProcessing(false);
+        toast.success("Voice input processed successfully!");
+      } catch (error) {
+        console.error('Error processing with Gemini:', error);
+        // Fallback to a different example than before
+        const fallbackResult = {
+          question: "What are agricultural loan options in Maharashtra?",
+          description: "I need information about agricultural loans available for small farmers in Maharashtra. Specifically interested in interest rates and repayment periods.",
+          name: "Suresh Patil",
+          tags: ["agriculture", "loans", "maharashtra", "small farmers"]
+        };
+        onTranscriptionComplete(fallbackResult);
+        setIsProcessing(false);
+        toast.success("Voice input processed with fallback data!");
+      }
     } catch (error) {
       console.error('Error handling audio data:', error);
       toast.error("Failed to process recording.");
