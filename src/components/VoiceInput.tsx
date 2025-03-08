@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from "sonner";
-import { extractQuestionDetails } from '@/services/geminiService';
+import { extractQuestionDetails, transcribeAudio } from '@/services/geminiService';
 
 interface VoiceInputProps {
   onTranscriptionComplete: (data: {
@@ -60,45 +60,39 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscriptionComplete, classN
     try {
       const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
       
-      // In a real implementation, we would upload this blob to a server with speech-to-text capabilities
-      // For now, we'll simulate the transcription with a random example
-      
-      // Simulate a slight delay for "transcription"
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Generate a more varied transcription for demo purposes
-      const demoTranscriptions = [
-        "I need information about agricultural loans for small farmers in Maharashtra. My name is Suresh Patil. I need details about interest rates and repayment periods.",
-        "I want to know how to open a savings account in a rural bank. I'm Meena Sharma and I live in a village in Rajasthan.",
-        "Can you tell me about government schemes for women entrepreneurs in rural areas? My name is Anita Singh and I want to start a small handicraft business.",
-        "I'm looking for information about crop insurance schemes. I'm a farmer from Tamil Nadu named Ramesh Kumar.",
-        "How can I get financial assistance for my children's education? I'm from a small village in Bihar. My name is Vikram Yadav."
-      ];
-      
-      // Pick a random transcription
-      const randomIndex = Math.floor(Math.random() * demoTranscriptions.length);
-      const mockTranscription = demoTranscriptions[randomIndex];
-      
-      console.log("Mock transcription:", mockTranscription);
-      
-      // Process with Gemini
+      // Transcribe the audio using Whisper via Groq
       try {
-        const result = await extractQuestionDetails(mockTranscription);
-        onTranscriptionComplete(result);
-        setIsProcessing(false);
-        toast.success("Voice input processed successfully!");
+        const transcription = await transcribeAudio(audioBlob);
+        console.log("Transcription result:", transcription);
+        
+        if (transcription) {
+          toast.info(`Transcribed: "${transcription.substring(0, 50)}${transcription.length > 50 ? '...' : ''}"`);
+          
+          // Process with Gemini
+          try {
+            const result = await extractQuestionDetails(transcription);
+            onTranscriptionComplete(result);
+            setIsProcessing(false);
+            toast.success("Voice input processed successfully!");
+          } catch (error) {
+            console.error('Error processing with Gemini:', error);
+            // Fallback to using just the transcription
+            const fallbackResult = {
+              question: transcription.split('.')[0] || "New Question",
+              description: transcription,
+              tags: ["voice", "question"]
+            };
+            onTranscriptionComplete(fallbackResult);
+            setIsProcessing(false);
+            toast.success("Voice processed with basic formatting.");
+          }
+        } else {
+          throw new Error("Empty transcription received");
+        }
       } catch (error) {
-        console.error('Error processing with Gemini:', error);
-        // Fallback to a different example
-        const fallbackResult = {
-          question: "What are agricultural loan options in Maharashtra?",
-          description: "I need information about agricultural loans available for small farmers in Maharashtra. Specifically interested in interest rates and repayment periods.",
-          name: "Suresh Patil",
-          tags: ["agriculture", "loans", "maharashtra", "small farmers"]
-        };
-        onTranscriptionComplete(fallbackResult);
+        console.error('Error during transcription:', error);
+        toast.error("Failed to transcribe audio. Please try again.");
         setIsProcessing(false);
-        toast.success("Voice input processed with fallback data!");
       }
     } catch (error) {
       console.error('Error handling audio data:', error);

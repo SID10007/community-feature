@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { cn } from '@/lib/utils';
-import { processVoiceInput } from '@/services/geminiService';
+import { processVoiceInput, transcribeAudio } from '@/services/geminiService';
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -65,42 +65,38 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, className }) => {
     try {
       const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
       
-      toast.info("Processing your voice input...");
+      toast.info("Transcribing your voice input...");
       
       try {
-        // Simulate a slight delay for "transcription"
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Use the actual transcription service
+        const transcription = await transcribeAudio(audioBlob);
+        console.log("Transcription received:", transcription);
         
-        // In a real app, we would upload this blob to a server with speech-to-text capabilities
-        // For now, we'll simulate with some varied examples
-        const demoQueries = [
-          "How do I apply for a Kisan Credit Card?",
-          "What are the benefits of Jan Dhan account?",
-          "Tell me about farm loan waiver schemes",
-          "How to get crop insurance?",
-          "What are the current interest rates for agricultural loans?"
-        ];
-        
-        // Pick a random query
-        const randomIndex = Math.floor(Math.random() * demoQueries.length);
-        const mockTranscription = demoQueries[randomIndex];
-        
-        console.log("Mock search query:", mockTranscription);
-        
-        // Process with Gemini
-        const result = await processVoiceInput(mockTranscription);
-        setQuery(result);
-        onSearch(result);
-        setIsProcessing(false);
-        toast.success("Voice input processed!");
+        if (transcription) {
+          toast.info(`Transcribed: "${transcription.substring(0, 50)}${transcription.length > 50 ? '...' : ''}"`);
+          
+          // Process with Gemini to refine the query
+          try {
+            const refinedQuery = await processVoiceInput(transcription);
+            setQuery(refinedQuery);
+            onSearch(refinedQuery);
+            setIsProcessing(false);
+            toast.success("Voice input processed!");
+          } catch (error) {
+            console.error('Error processing with Gemini:', error);
+            // Use the raw transcription if Gemini fails
+            setQuery(transcription);
+            onSearch(transcription);
+            setIsProcessing(false);
+            toast.info("Used transcription directly due to processing error.");
+          }
+        } else {
+          throw new Error("Empty transcription received");
+        }
       } catch (error) {
-        console.error('Error processing audio:', error);
-        // Use a different fallback
-        const fallbackQuery = "pension schemes for rural citizens";
-        setQuery(fallbackQuery);
-        onSearch(fallbackQuery);
+        console.error('Error during transcription:', error);
+        toast.error("Failed to transcribe audio. Please try again.");
         setIsProcessing(false);
-        toast.info("Used fallback query due to processing error");
       }
     } catch (error) {
       console.error('Error handling audio data:', error);
@@ -132,7 +128,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, className }) => {
             onClick={isRecording ? stopRecording : startRecording}
             disabled={isProcessing}
           >
-            <Mic className="h-4 w-4" />
+            <Mic className={`h-4 w-4 ${isProcessing ? 'animate-spin' : ''}`} />
           </Button>
           
           <Button type="submit" className="rounded-md btn-ripple btn-transition">
