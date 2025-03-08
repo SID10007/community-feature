@@ -65,16 +65,27 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, className }) => {
     try {
       const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
       
-      // For demo purposes, simulate processing
       toast.info("Processing your voice input...");
       
       try {
         // Simulate a slight delay for "transcription"
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // In a real app, you would first convert audio to text, then process with Gemini
-        // For this demo, we'll use a mock transcription and send it to Gemini
-        const mockTranscription = "I need information about pension schemes";
+        // In a real app, we would upload this blob to a server with speech-to-text capabilities
+        // For now, we'll simulate with some varied examples
+        const demoQueries = [
+          "How do I apply for a Kisan Credit Card?",
+          "What are the benefits of Jan Dhan account?",
+          "Tell me about farm loan waiver schemes",
+          "How to get crop insurance?",
+          "What are the current interest rates for agricultural loans?"
+        ];
+        
+        // Pick a random query
+        const randomIndex = Math.floor(Math.random() * demoQueries.length);
+        const mockTranscription = demoQueries[randomIndex];
+        
+        console.log("Mock search query:", mockTranscription);
         
         // Process with Gemini
         const result = await processVoiceInput(mockTranscription);
@@ -84,7 +95,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, className }) => {
         toast.success("Voice input processed!");
       } catch (error) {
         console.error('Error processing audio:', error);
-        // Use a different fallback than before
+        // Use a different fallback
         const fallbackQuery = "pension schemes for rural citizens";
         setQuery(fallbackQuery);
         onSearch(fallbackQuery);

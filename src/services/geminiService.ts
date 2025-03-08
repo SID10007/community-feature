@@ -1,4 +1,3 @@
-
 // This service would integrate with Google's Gemini API
 // For the demo, we're using mock implementations
 
@@ -49,15 +48,11 @@ export const translateContent = async (content: string, targetLanguage: string):
   }
 };
 
-export const processVoiceInput = async (audioData: string): Promise<string> => {
-  console.log('Processing voice input with Gemini');
+export const processVoiceInput = async (transcribedText: string): Promise<string> => {
+  console.log('Processing voice input with Gemini:', transcribedText);
   
   try {
-    // For demo purposes, we'll simulate speech-to-text by using a mock text
-    // In a real app, you would use a speech-to-text service here
-    const mockText = "How can I apply for a farming subsidy?";
-    
-    // Then we would use Gemini to analyze this text
+    // Send the transcribed text to Gemini for processing
     const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent', {
       method: 'POST',
       headers: {
@@ -67,39 +62,40 @@ export const processVoiceInput = async (audioData: string): Promise<string> => {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `Extract the main question from this text: ${mockText}`
+            text: `Extract the main search query from this text: ${transcribedText}`
           }]
         }]
       })
     });
 
     const data = await response.json();
+    console.log('Gemini response for processing voice input:', data);
     
     if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-      return data.candidates[0].content.parts[0].text;
+      return data.candidates[0].content.parts[0].text.trim();
     }
     
-    // If API fails, return a different example than the fixed one
-    return "How can I apply for a farming subsidy?";
+    // If API fails, return the original transcribed text
+    return transcribedText;
   } catch (error) {
     console.error('Voice processing error:', error);
-    return "How can I apply for a farming subsidy?";
+    return transcribedText;
   }
 };
 
-export const extractQuestionDetails = async (voiceText: string): Promise<{
+export const extractQuestionDetails = async (transcribedText: string): Promise<{
   question: string;
   description: string;
   name?: string;
   tags: string[];
 }> => {
-  console.log('Extracting question details with Gemini');
+  console.log('Extracting question details with Gemini from:', transcribedText);
   
   try {
     const prompt = `
       I need you to extract structured information from the following voice input about a financial question:
       
-      "${voiceText}"
+      "${transcribedText}"
       
       Please extract and return ONLY the following fields in JSON format:
       1. question: A concise title for the question (max 100 characters)
@@ -126,6 +122,7 @@ export const extractQuestionDetails = async (voiceText: string): Promise<{
     });
 
     const data = await response.json();
+    console.log('Gemini response for extracting question details:', data);
     
     if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
       try {
@@ -144,31 +141,14 @@ export const extractQuestionDetails = async (voiceText: string): Promise<{
         };
       } catch (e) {
         console.error('Failed to parse Gemini JSON response:', e);
-        // Fallback to a different example
-        return {
-          question: "How can I apply for a farming subsidy?",
-          description: "I need to understand the process for applying for agricultural subsidies for my small farm.",
-          name: "Farmer Singh",
-          tags: ["farming", "subsidy", "agriculture"]
-        };
+        throw e;
       }
     }
     
-    // Fallback to a different example if API fails
-    return {
-      question: "How can I apply for a farming subsidy?",
-      description: "I need to understand the process for applying for agricultural subsidies for my small farm.",
-      name: "Farmer Singh",
-      tags: ["farming", "subsidy", "agriculture"]
-    };
+    throw new Error("Failed to get a valid response from Gemini");
   } catch (error) {
     console.error('Question extraction error:', error);
-    return {
-      question: "How can I apply for a farming subsidy?",
-      description: "I need to understand the process for applying for agricultural subsidies for my small farm.",
-      name: "Farmer Singh",
-      tags: ["farming", "subsidy", "agriculture"]
-    };
+    throw error;
   }
 };
 

@@ -60,16 +60,28 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscriptionComplete, classN
     try {
       const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
       
-      // For demo purposes, we'll simulate speech-to-text
-      // In a real app, you would send the audio to a speech-to-text service
+      // In a real implementation, we would upload this blob to a server with speech-to-text capabilities
+      // For now, we'll simulate the transcription with a random example
       
-      // Simulate a 2-second delay for "transcription"
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Simulate a slight delay for "transcription"
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Generate a mock transcription (in real app, this would come from a speech-to-text service)
-      const mockTranscription = "I want to know about agricultural loans for small farmers in Maharashtra. My name is Suresh Patil. I need details about interest rates and repayment periods.";
+      // Generate a more varied transcription for demo purposes
+      const demoTranscriptions = [
+        "I need information about agricultural loans for small farmers in Maharashtra. My name is Suresh Patil. I need details about interest rates and repayment periods.",
+        "I want to know how to open a savings account in a rural bank. I'm Meena Sharma and I live in a village in Rajasthan.",
+        "Can you tell me about government schemes for women entrepreneurs in rural areas? My name is Anita Singh and I want to start a small handicraft business.",
+        "I'm looking for information about crop insurance schemes. I'm a farmer from Tamil Nadu named Ramesh Kumar.",
+        "How can I get financial assistance for my children's education? I'm from a small village in Bihar. My name is Vikram Yadav."
+      ];
       
-      // Now process this text with Gemini to extract structured information
+      // Pick a random transcription
+      const randomIndex = Math.floor(Math.random() * demoTranscriptions.length);
+      const mockTranscription = demoTranscriptions[randomIndex];
+      
+      console.log("Mock transcription:", mockTranscription);
+      
+      // Process with Gemini
       try {
         const result = await extractQuestionDetails(mockTranscription);
         onTranscriptionComplete(result);
@@ -77,7 +89,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscriptionComplete, classN
         toast.success("Voice input processed successfully!");
       } catch (error) {
         console.error('Error processing with Gemini:', error);
-        // Fallback to a different example than before
+        // Fallback to a different example
         const fallbackResult = {
           question: "What are agricultural loan options in Maharashtra?",
           description: "I need information about agricultural loans available for small farmers in Maharashtra. Specifically interested in interest rates and repayment periods.",
