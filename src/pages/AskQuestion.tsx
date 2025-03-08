@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import AskQuestionForm from '@/components/AskQuestionForm';
-import { toast } from '@/components/ui/sonner';
+import { toast } from "sonner";
 
 const AskQuestion = () => {
   const navigate = useNavigate();

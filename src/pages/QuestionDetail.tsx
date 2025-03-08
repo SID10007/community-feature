@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, MessageSquare } from 'lucide-react';
@@ -11,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import TranslationButton from '@/components/TranslationButton';
 import { Card, CardContent } from '@/components/ui/card';
 import { getMockQuestions, getMockAnswers, translateContent } from '@/services/geminiService';
-import { toast } from '@/components/ui/sonner';
+import { toast } from "sonner";
 
 const QuestionDetail = () => {
   const { id } = useParams<{ id: string }>();

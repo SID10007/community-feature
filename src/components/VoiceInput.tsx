@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/sonner';
+import { toast } from "sonner";
 import { processVoiceInput } from '@/services/geminiService';
 
 interface VoiceInputProps {

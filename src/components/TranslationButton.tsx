@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { toast } from '@/components/ui/sonner';
+import { toast } from "sonner";
 
 interface TranslationButtonProps {
   onTranslate: (language: string) => void;
