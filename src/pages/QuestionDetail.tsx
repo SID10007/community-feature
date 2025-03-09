@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, MessageSquare } from 'lucide-react';
@@ -24,7 +25,16 @@ const QuestionDetail = () => {
   useEffect(() => {
     // Simulate data loading
     setTimeout(() => {
-      const allQuestions = getMockQuestions();
+      // Get mock questions
+      const mockQuestions = getMockQuestions();
+      
+      // Get user-submitted questions from localStorage
+      const userQuestions = JSON.parse(localStorage.getItem('userQuestions') || '[]');
+      
+      // Combine both sources of questions
+      const allQuestions = [...userQuestions, ...mockQuestions];
+      
+      // Find the specific question by ID
       const questionData = allQuestions.find(q => q.id === id);
       
       if (questionData) {
