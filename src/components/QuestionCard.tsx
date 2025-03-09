@@ -77,7 +77,6 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                     variant="secondary" 
                     className="px-2 py-0.5 text-xs shine-hover"
                     style={{ 
-                      animationDelay: `${0.1 + (index * 0.05)}s`,
                       opacity: 0,
                       animation: 'stagger-fade-in 0.5s ease forwards',
                       animationDelay: `${0.1 + (index * 0.05)}s`
