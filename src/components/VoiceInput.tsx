@@ -18,8 +18,10 @@ interface VoiceInputProps {
 const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscriptionComplete, className }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [recordingDuration, setRecordingDuration] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const startRecording = async () => {
     try {
@@ -39,6 +41,13 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscriptionComplete, classN
       
       mediaRecorder.start();
       setIsRecording(true);
+      setRecordingDuration(0);
+      
+      // Start a timer to track recording duration
+      timerRef.current = setInterval(() => {
+        setRecordingDuration(prev => prev + 1);
+      }, 1000);
+      
       toast.info("Recording started. Describe your question in detail...");
     } catch (error) {
       console.error('Error accessing microphone:', error);
@@ -52,6 +61,13 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscriptionComplete, classN
       mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
       setIsRecording(false);
       setIsProcessing(true);
+      
+      // Clear the timer
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      
       toast.info("Processing your voice input...");
     }
   };
@@ -101,6 +117,13 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscriptionComplete, classN
     }
   };
 
+  // Format seconds to MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const secs = (seconds % 60).toString().padStart(2, '0');
+    return `${mins}:${secs}`;
+  };
+
   return (
     <div className={className}>
       <Button
@@ -108,24 +131,41 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscriptionComplete, classN
         variant={isRecording ? "destructive" : "outline"}
         size="lg"
         className={`w-full rounded-md btn-transition flex items-center justify-center gap-2 ${
-          isRecording ? 'animate-pulse-subtle' : ''
+          isRecording ? 'animate-pulse-subtle shadow-lg shadow-primary/20' : ''
         }`}
         onClick={isRecording ? stopRecording : startRecording}
         disabled={isProcessing}
       >
-        <Mic className={`h-5 w-5 ${isProcessing ? 'animate-spin' : ''}`} />
+        <div className="relative">
+          <Mic className={`h-5 w-5 ${isProcessing ? 'animate-spin' : ''}`} />
+          {isRecording && (
+            <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500 animate-ping"></div>
+          )}
+        </div>
         <span>
           {isRecording 
-            ? "Stop Recording" 
+            ? `Recording... ${formatTime(recordingDuration)}` 
             : isProcessing 
               ? "Processing..." 
               : "Speak Your Question"}
         </span>
       </Button>
       {isRecording && (
-        <p className="text-sm text-center mt-2 text-muted-foreground animate-pulse">
-          Recording... Click the button again to stop.
-        </p>
+        <div className="mt-3 flex justify-center">
+          <div className="flex items-center space-x-1">
+            {[...Array(5)].map((_, i) => (
+              <div 
+                key={i}
+                className="bg-primary w-1 rounded-full animate-bounce"
+                style={{ 
+                  height: `${12 + Math.random() * 16}px`,
+                  animationDelay: `${i * 0.1}s`,
+                  animationDuration: '0.5s'
+                }}
+              ></div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
