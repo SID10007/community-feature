@@ -39,8 +39,18 @@ const QuestionDetail = () => {
       
       if (questionData) {
         setQuestion(questionData);
-        const answersData = getMockAnswers(id || '');
-        setAnswers(answersData);
+        
+        // Only fetch mock answers for mock questions, not for user-submitted questions
+        const isUserQuestion = userQuestions.some(q => q.id === id);
+        
+        if (!isUserQuestion) {
+          // This is a mock question, so get its answers
+          const answersData = getMockAnswers(id || '');
+          setAnswers(answersData);
+        } else {
+          // This is a user-submitted question, it has no answers yet
+          setAnswers([]);
+        }
       }
       
       setIsLoading(false);
@@ -79,12 +89,16 @@ const QuestionDetail = () => {
     
     if (language === 'English') {
       // Reload original data
-      const allQuestions = getMockQuestions();
+      const allQuestions = [...JSON.parse(localStorage.getItem('userQuestions') || '[]'), ...getMockQuestions()];
       const questionData = allQuestions.find(q => q.id === id);
       if (questionData) setQuestion(questionData);
       
-      const answersData = getMockAnswers(id || '');
-      setAnswers(answersData);
+      // Only reload answers for mock questions
+      const isUserQuestion = JSON.parse(localStorage.getItem('userQuestions') || '[]').some(q => q.id === id);
+      if (!isUserQuestion) {
+        const answersData = getMockAnswers(id || '');
+        setAnswers(answersData);
+      }
       return;
     }
     
@@ -100,18 +114,21 @@ const QuestionDetail = () => {
       description: translatedDesc,
     });
     
-    // Translate answers
-    const translatedAnswers = await Promise.all(
-      answers.map(async (answer) => {
-        const translatedContent = await translateContent(answer.content, language);
-        return {
-          ...answer,
-          content: translatedContent,
-        };
-      })
-    );
+    // Translate answers if there are any
+    if (answers.length > 0) {
+      const translatedAnswers = await Promise.all(
+        answers.map(async (answer) => {
+          const translatedContent = await translateContent(answer.content, language);
+          return {
+            ...answer,
+            content: translatedContent,
+          };
+        })
+      );
+      
+      setAnswers(translatedAnswers);
+    }
     
-    setAnswers(translatedAnswers);
     setIsLoading(false);
   };
 

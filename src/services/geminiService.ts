@@ -271,26 +271,145 @@ export const getMockQuestions = () => [
   }
 ];
 
-// Mock answer data
-export const getMockAnswers = (questionId: string) => [
-  {
-    id: "a1",
-    content: "To apply for a Kisan Credit Card, visit your nearest bank branch or cooperative society with your land records, identity proof, and address proof. The application process is simple, and you can get a credit limit based on your land holdings and crop pattern.",
-    author: {
-      name: "Bank Manager",
-      avatar: "",
-    },
-    createdAt: "1 day ago",
-    isAccepted: true,
-  },
-  {
-    id: "a2",
-    content: "I recently got my Kisan Credit Card. Make sure you also bring your Aadhaar card and a passport-sized photograph. Some banks also ask for a soil health card if you have one. The interest rate is subsidized if you repay on time.",
-    author: {
-      name: "Ramesh Farmer",
-      avatar: "",
-    },
-    createdAt: "20 hours ago",
-    isAccepted: false,
+// Mock answer data with different answers for each question ID
+export const getMockAnswers = (questionId: string) => {
+  switch (questionId) {
+    case "q1":
+      return [
+        {
+          id: "a1-q1",
+          content: "To apply for a Kisan Credit Card, visit your nearest bank branch or cooperative society with your land records, identity proof, and address proof. The application process is simple, and you can get a credit limit based on your land holdings and crop pattern.",
+          author: {
+            name: "Bank Manager",
+            avatar: "",
+          },
+          createdAt: "1 day ago",
+          isAccepted: true,
+        },
+        {
+          id: "a2-q1",
+          content: "I recently got my Kisan Credit Card. Make sure you also bring your Aadhaar card and a passport-sized photograph. Some banks also ask for a soil health card if you have one. The interest rate is subsidized if you repay on time.",
+          author: {
+            name: "Ramesh Farmer",
+            avatar: "",
+          },
+          createdAt: "20 hours ago",
+          isAccepted: false,
+        }
+      ];
+    case "q2":
+      return [
+        {
+          id: "a1-q2",
+          content: "To qualify for Pradhan Mantri Awas Yojana (PMAY), you need to be from an Economically Weaker Section (EWS) or Low Income Group (LIG). The annual income should be less than ₹3 lakh for EWS and ₹6 lakh for LIG. You'll need Aadhaar, income proof, and land documents. Apply at your local municipality or gram panchayat office.",
+          author: {
+            name: "Housing Officer",
+            avatar: "",
+          },
+          createdAt: "5 days ago",
+          isAccepted: true,
+        },
+        {
+          id: "a2-q2",
+          content: "I got a PMAY subsidy last year. The process takes about 2-3 months for approval. Make sure all your documents are in order. They also check if you or your family members own any other pucca house anywhere in India.",
+          author: {
+            name: "Vijay Kumar",
+            avatar: "",
+          },
+          createdAt: "3 days ago",
+          isAccepted: false,
+        },
+        {
+          id: "a3-q2",
+          content: "There are different components of PMAY. For rural areas, it's PMAY-G and for urban it's PMAY-U. The subsidy amount and eligibility criteria are different. For rural areas, you get about ₹1.2 lakh subsidy plus ₹12,000 for toilet construction.",
+          author: {
+            name: "Rural Development Officer",
+            avatar: "",
+          },
+          createdAt: "2 days ago",
+          isAccepted: false,
+        }
+      ];
+    case "q3":
+      return [
+        {
+          id: "a1-q3",
+          content: "For a Jan Dhan account, you'll need your Aadhaar card, a passport-sized photograph, and your mobile number. The process is very simple - just visit any bank branch and fill out the form. There's no minimum balance requirement, and you'll get a RuPay debit card.",
+          author: {
+            name: "SBI Manager",
+            avatar: "",
+          },
+          createdAt: "2 days ago",
+          isAccepted: true,
+        },
+        {
+          id: "a2-q3",
+          content: "I opened mine at the post office. You can also open it at payment banks and small finance banks. If you don't have Aadhaar, you can use your NREGA job card, voter ID, or driving license along with a self-certification of your current address.",
+          author: {
+            name: "Postal Service Employee",
+            avatar: "",
+          },
+          createdAt: "1 day ago",
+          isAccepted: false,
+        }
+      ];
+    case "q4":
+      return [
+        {
+          id: "a1-q4",
+          content: "The main government scheme is Pradhan Mantri Fasal Bima Yojana (PMFBY). It covers yield losses from natural calamities like floods, droughts, pests, etc. The premium is very low - 2% for kharif crops, 1.5% for rabi crops, and 5% for commercial crops. Apply through your nearest bank where you have your account or through the Common Service Center.",
+          author: {
+            name: "Agricultural Officer",
+            avatar: "",
+          },
+          createdAt: "3 days ago",
+          isAccepted: true,
+        },
+        {
+          id: "a2-q4",
+          content: "There's also the Weather Based Crop Insurance Scheme (WBCIS) that covers losses from specific weather conditions like rainfall, temperature, humidity, etc. It's more suitable for areas where historical yield data is not available.",
+          author: {
+            name: "Insurance Agent",
+            avatar: "",
+          },
+          createdAt: "1 day ago",
+          isAccepted: false,
+        }
+      ];
+    case "q5":
+      return [
+        {
+          id: "a1-q5",
+          content: "If you're 58, you can enroll in the Pradhan Mantri Vaya Vandana Yojana (PMVVY) which is specifically for senior citizens. It gives a guaranteed pension for 10 years. You can also look at Atal Pension Yojana if you're still some years away from 60.",
+          author: {
+            name: "Pension Officer",
+            avatar: "",
+          },
+          createdAt: "10 days ago",
+          isAccepted: true,
+        },
+        {
+          id: "a2-q5",
+          content: "For rural citizens, there's also the National Social Assistance Programme (NSAP) which includes the Indira Gandhi National Old Age Pension Scheme. You'll get about ₹200-500 per month depending on your age and state. Apply at your gram panchayat office.",
+          author: {
+            name: "Social Welfare Officer",
+            avatar: "",
+          },
+          createdAt: "1 week ago",
+          isAccepted: false,
+        },
+        {
+          id: "a3-q5",
+          content: "Check with your state government too. Many states have their own pension schemes with additional benefits. For example, in my state, they provide an additional ₹1000 per month on top of the central scheme.",
+          author: {
+            name: "State Benefits Advisor",
+            avatar: "",
+          },
+          createdAt: "5 days ago",
+          isAccepted: false,
+        }
+      ];
+    default:
+      return [];
   }
-];
+};
