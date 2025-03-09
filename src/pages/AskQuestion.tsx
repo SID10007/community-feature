@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -8,9 +9,29 @@ const AskQuestion = () => {
   const navigate = useNavigate();
 
   const handleSubmitQuestion = (questionData: any) => {
-    // In a real app, we would submit this data to a backend
-    console.log('Question submitted:', questionData);
+    // Create a new question object with the necessary format
+    const newQuestion = {
+      id: `q${Date.now()}`, // Generate a unique ID using timestamp
+      title: questionData.title,
+      description: questionData.description,
+      author: {
+        name: questionData.author || 'Anonymous',
+        avatar: "",
+      },
+      tags: questionData.tags,
+      answerCount: 0,
+      createdAt: "Just now",
+    };
     
+    // Get existing questions from localStorage or initialize an empty array
+    const existingQuestions = JSON.parse(localStorage.getItem('userQuestions') || '[]');
+    
+    // Add the new question to the array
+    const updatedQuestions = [newQuestion, ...existingQuestions];
+    
+    // Save back to localStorage
+    localStorage.setItem('userQuestions', JSON.stringify(updatedQuestions));
+
     // Show success toast
     toast.success('Your question has been posted successfully!');
     

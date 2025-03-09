@@ -19,9 +19,16 @@ const Index = () => {
   useEffect(() => {
     // Simulate data loading
     setTimeout(() => {
-      const data = getMockQuestions();
-      setQuestions(data);
-      setFilteredQuestions(data);
+      const mockData = getMockQuestions();
+      
+      // Get user-submitted questions from localStorage
+      const userQuestions = JSON.parse(localStorage.getItem('userQuestions') || '[]');
+      
+      // Combine user questions with mock questions
+      const allQuestions = [...userQuestions, ...mockData];
+      
+      setQuestions(allQuestions);
+      setFilteredQuestions(allQuestions);
       setIsLoading(false);
     }, 800);
   }, []);
@@ -121,7 +128,7 @@ const Index = () => {
           ) : (
             <div className="text-center py-12 bg-muted/30 rounded-lg">
               <h3 className="text-xl font-medium mb-2">No questions found</h3>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-muted-foreground mb-1">
                 Try a different search term or ask a new question
               </p>
               <Link to="/ask">
