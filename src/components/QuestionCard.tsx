@@ -60,7 +60,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   return (
     <Link to={`/question/${id}`}>
       <Card 
-        className={`overflow-hidden hover-lift ${isTranslated ? 'border-primary/30' : ''}`}
+        className={`overflow-hidden hover-lift border border-gray-200 ${isTranslated ? 'border-ey-gold/30' : ''}`}
         style={{
           transformOrigin: 'center',
           animation: 'pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
@@ -75,7 +75,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                   <Badge 
                     key={tag} 
                     variant="secondary" 
-                    className="px-2 py-0.5 text-xs shine-hover"
+                    className="px-2 py-0.5 text-xs shine-hover bg-gray-100 text-gray-700"
                     style={{ 
                       opacity: 0,
                       animation: 'stagger-fade-in 0.5s ease forwards',
@@ -86,7 +86,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                   </Badge>
                 ))}
               </div>
-              <CardTitle className="line-clamp-2 text-lg font-semibold gradient-text">{title}</CardTitle>
+              <CardTitle className="line-clamp-2 text-lg font-semibold text-ey-black">{title}</CardTitle>
             </div>
           </div>
         </CardHeader>
@@ -97,16 +97,16 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           <div className="flex items-center gap-2">
             <Avatar className="h-6 w-6 floating">
               <AvatarImage src={author.avatar} alt={author.name} />
-              <AvatarFallback className="text-xs bg-primary/10 text-primary">{author.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback className="text-xs bg-ey-gold/10 text-ey-black">{author.name.substring(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
             <span className="text-xs text-muted-foreground">{author.name}</span>
           </div>
           <div className="flex items-center gap-4">
             <button 
               onClick={handleLike}
-              className="flex items-center gap-1 text-xs text-muted-foreground transition-all hover:text-primary"
+              className="flex items-center gap-1 text-xs text-muted-foreground transition-all hover:text-ey-gold"
             >
-              <Heart className={`h-4 w-4 ${liked ? 'text-red-500 fill-red-500' : ''} transition-all hover:scale-110`} />
+              <Heart className={`h-4 w-4 ${liked ? 'text-ey-gold fill-ey-gold' : ''} transition-all hover:scale-110`} />
               <span>{likeCount}</span>
             </button>
             <div className="flex items-center gap-1">
@@ -115,13 +115,13 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             </div>
             <button 
               onClick={handleSave}
-              className="text-xs text-muted-foreground transition-all hover:text-primary"
+              className="text-xs text-muted-foreground transition-all hover:text-ey-gold"
             >
-              <Bookmark className={`h-4 w-4 transition-all hover:scale-110 ${saved ? 'text-primary fill-primary' : ''}`} />
+              <Bookmark className={`h-4 w-4 transition-all hover:scale-110 ${saved ? 'text-ey-gold fill-ey-gold' : ''}`} />
             </button>
             <button 
               onClick={handleShare}
-              className="text-xs text-muted-foreground transition-all hover:text-primary"
+              className="text-xs text-muted-foreground transition-all hover:text-ey-gold"
             >
               <Share2 className="h-4 w-4 transition-all hover:scale-110" />
             </button>
